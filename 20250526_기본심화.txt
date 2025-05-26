@@ -1,0 +1,109 @@
+// P2
+use tutorial;
+db.users.insertOne({username : "smith"});
+db.users.insertOne({username : "jones"});
+db.users.find();
+db.users.findOne();
+
+//P3
+db.users.find({username : "jones"});
+db.users.find({$or:[{username : "jones"}, {username : "smith"}]});
+
+//P4
+db.users.updateMany({username: "smith"}, {$set: {country: "Canada"}});
+db.users.find({country : "Canada"});
+
+//P5
+db.users.replaceOne({username: "smith"}, {country: "Canada"});
+db.users.updateMany({country: "Canada"}, {$set: {username: "smith", country: "Canada"}});
+
+//P6
+db.users.updateMany({username: "smith"}, {$unset: {country: 1}})
+db.users.find({username : "smith"})
+
+//P7
+show dbs;
+show collections;
+db.users.stats();
+db.runCommand({collStats:"users"});
+
+//P8
+db.user.deleteMany({username : "smith"});
+db.products.countDocuments({username : "smith"});
+
+db.users.deleteMany({});
+db.user.find();
+
+db.users.drop();
+
+//P10
+use test;
+for(let i = 0; i < 200000; i++) {
+    db.product.insertOne({num: i}, {name: "스마트폰" + i});
+}
+db.products.countDocuments();
+
+//P11
+db.product.find().sort({ num: -1 });
+db.product.find().sort({ num: -1 }).limit(10);
+db.product.find()
+    .sort({ num: -1 })
+    .skip((6 - 1) * 10)
+    .limit(10)
+
+//P12
+db.product.find({
+    $or: [
+        { num: { $lt: 15 } },
+        { num: { $gt: 19995 } }
+    ]
+})
+
+db.product.find({
+    name: { $in: ['스마트폰10', '스마트폰 100', '스마트폰 1000'] }
+})
+
+db.product.find(
+    { num: { $lt: 5 } },
+    { name: 1, _id: 0 }
+)
+
+//-------------------------- 심화
+//P2
+db.users.insertOne({username: "smith"});
+db.users.updateOne({username: "smith"}, {$set: {favorites: {cities : ["Chicago", "Cheyenne"], movies : ["Casablanca", "Fpr a Few Dollars More", "The String"]}}});
+db.users.find();
+
+//P3
+db.users.insertOne({username: "jones"});
+db.users.updateOne({username: "jones"}, {$set: {favorites: {movies : ["Casablanca", "Rocky"]}}});
+db.users.find();
+
+//P4
+db.users.find({ "favorites.movies": "Casablanca" });
+db.users.updateMany(
+    { "favorites.movies": "Casablanca" },
+    { $addToSet: { "favorites.movies": "The Maltese Falcon" } }
+);
+
+//P6
+for (let i = 0; i < 20000; i++) {
+    db.numbers.insertOne({ num: i });
+};
+db.numbers.countDocuments();
+
+//P7
+db.numbers.find({ num: { $gte: 20, $lte: 25 } });
+db.numbers.find({ num: { $gte: 20, $lte: 25 } }).explain("executionStats");
+
+//P8
+db.numbers.createIndex({ num: 1 });
+db.numbers.getIndexes();
+db.numbers.find({ num: { $gte: 20, $lte: 25 } }).explain("executionStats");
+
+
+
+
+
+
+
